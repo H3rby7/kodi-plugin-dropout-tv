@@ -24,6 +24,8 @@ logging.basicConfig(level=args.log_level)
 
 import requests
 from bs4 import BeautifulSoup
+import re
+
 import json
 
 session = requests.Session()
@@ -64,7 +66,10 @@ def login(email, password):
   r = session.post(LOGIN_URL, data=login_payload)
   write_log_response("login-POST", r)
 
-  return "eyMOCK.MOCK.MOCK"
+  match = re.search(r'window\.TOKEN\s*=\s*"([^"]+)"', r.text)
+  token = match.group(1) if match else None
+
+  return token
 
 if __name__ == "__main__":
   logger.warning("Reverse Engineering Droput.tv WEB")
