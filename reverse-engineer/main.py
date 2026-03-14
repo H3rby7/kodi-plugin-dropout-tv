@@ -6,8 +6,8 @@ import argcomplete
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-ll', '--log-level', action='store', dest='log_level', help='Log Level', default='INFO')
-parser.add_argument('-u', '--username', action='store', dest='user', help='Username')
-parser.add_argument('-p', '--password', action='store', dest='pass', help='Password')
+parser.add_argument('-e', '--email', action='store', dest='email', help='email address')
+parser.add_argument('-p', '--password', action='store', dest='password', help='Password')
 argcomplete.autocomplete(parser)
 
 try:
@@ -40,30 +40,27 @@ def write_log_response(name, response):
   logger.debug("Response Headers are:")
   logger.debug(f"{response.headers}")
 
-def get_csrf_dict(soup):
-  param = soup.select_one("head meta[name='csrf-param']")["content"]
-  token = soup.select_one("head meta[name='csrf-token']")["content"]
-  logger.info(f"Extracted CSRF header data > {param}:{token}")
-  return [param, token]
-
-def login():
+def login(email, password):
   logger.info(f"GET Login page to get session cookies...")
   r = session.get(LOGIN_URL)
   write_log_response("login-GET", r)
   logger.debug(f"Session cookies are: {session.cookies.get_dict()}")
 
   soup = BeautifulSoup(r.text, "lxml")
-  csrfHeader = get_csrf_dict(soup)
+
+  logger.debug("Extracting csrf param and token...")
+  csrf_param = soup.select_one("head meta[name='csrf-param']")["content"]
+  csrf_token = soup.select_one("head meta[name='csrf-token']")["content"]
+  logger.info(f"Extracted CSRF param '{csrf_param}' with value '{csrf_token}'")
+
 
   login_payload = {
-    "email": "user@example.com",
-    "password": "password"
-    # 'utf8': '%E2%9C%93'
+    "email": email,
+    "password": password,
+    csrf_param: csrf_token
   }
-  login_payload[csrfHeader[0]] = csrfHeader[1]
 
   logger.info(f"POST Login credentials to get bearer token...")
-
   r = session.post(LOGIN_URL, data=login_payload)
   write_log_response("login-POST", r)
 
@@ -71,6 +68,6 @@ def login():
 
 if __name__ == "__main__":
   logger.warning("Reverse Engineering Droput.tv WEB")
-  bearerToken = login()
+  bearerToken = login(args.email, args.password)
 
   logger.info(f"Retreived token: {bearerToken}")

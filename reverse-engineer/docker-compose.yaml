@@ -1,9 +1,10 @@
-version: '3'
 services:
   rev:
     build: .
-    command: python /app/main.py
+    command: sh -c 'python /app/main.py --log-level $$LOG_LEVEL --email $$EMAIL --password $$PASSWORD'
     volumes:
       - .:/app
     environment:
+      LOG_LEVEL: INFO
       PYTHONUNBUFFERED: "1"
+    env_file: "login.env"
