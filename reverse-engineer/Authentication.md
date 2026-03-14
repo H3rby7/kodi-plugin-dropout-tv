@@ -1,5 +1,16 @@
 # Authentication
 
+Good flow would be:
+
+1. Load session cookie and bearer-token from file/cache/memory
+2. Try to make API call, if it fails:
+   1. Visit https://watch.dropout.tv/browse to create/update the session
+   2. Try to get the token (window.TOKEN)
+      2. if not present, get `csrf-param` and `csrf-token` and POST login
+         1. if login data is not available open setting dialog to set email and password
+   3. Make API calls with the token
+3. Store session cookie and bearer-token to file/cache/memory to be re-used
+
 ## Login
 
 ### Login-Page
