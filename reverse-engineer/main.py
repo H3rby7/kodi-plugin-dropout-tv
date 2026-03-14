@@ -1,43 +1,63 @@
 import logging
-
-logging.basicConfig(level=logging.INFO)
-
 logger = logging.getLogger(__name__)
 
+import argparse
+import argcomplete
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-ll', '--log-level', action='store', dest='log_level', help='Log Level', default='INFO')
+parser.add_argument('-u', '--username', action='store', dest='user', help='Username')
+parser.add_argument('-p', '--password', action='store', dest='pass', help='Password')
+argcomplete.autocomplete(parser)
+
+try:
+    args = parser.parse_args()
+except ImportError:
+    logger.critical("Import error, there are missing dependencies to install.  'apt-get install python3-argcomplete "
+          "&& activate-global-python-argcomplete3' may solve")
+except AttributeError:
+    parser.print_help()
+except Exception as err:
+    logger.error("Error:", err)
+
+logging.basicConfig(level=args.log_level)
+
 import requests
-from bs4 import BeautifulSoup
+import json
 
-BASE_URL = "https://watch.dropout.tv/"
+session = requests.Session()
 
-def write_log_response(name, content):
-  with open(f"responses/{name}", "wb") as f:
-    f.write(content)
+LOGIN_URL = "https://watch.dropout.tv/login"
+
+def write_log_response(name, response):
+  with open(f"responses/{name}-response.html", "wb") as f:
+    f.write(response.content)
   logger.debug("Response Body is:")
-  logger.debug(content)
+  logger.debug(response.content)
+  with open(f"responses/{name}-headers.json", "w") as f:
+    json.dump(dict(response.headers), f, indent=2, sort_keys=True)
+  logger.debug("Response Headers are:")
+  logger.debug(f"{response.headers}")
 
-def get_show_links():
-  logger.info("Getting show links")
+def login():
+  logger.info(f"GET Login page to get session cookies...")
+  r = session.get(LOGIN_URL)
+  write_log_response("login-GET", r)
+  logger.debug(f"Session cookies are: {session.cookies.get_dict()}")
 
-  r = requests.get(BASE_URL)
-  write_log_response("landing.html", r.content)
-  
+  logger.info(f"POST Login credentials to get bearer token...")
+  r = session.post(LOGIN_URL, data={
+      'email': 'url-encoded-email%40domain.com',
+      'password': 'url-encoded-password-plaintext',
+      # 'authenticity_token': '???',
+      # 'utf8': '%E2%9C%93'
+    })
+  write_log_response("login-POST", r)
 
-  soup = BeautifulSoup(r.text, "lxml")
-
-  links = []
-
-  for a in soup.select("a[href]"):
-    href = a["href"]
-
-    if "/videos/" in href:
-      links.append(BASE_URL + href)
-
-  return links
-
+  return "eyMOCK.MOCK.MOCK"
 
 if __name__ == "__main__":
   logger.warning("Reverse Engineering Droput.tv WEB")
-  shows = get_show_links()
+  bearerToken = login()
 
-  for s in shows[:10]:
-    logger.warning(f"Found Show: {s}")
+  logger.info(f"Retreived token: {bearerToken}")
