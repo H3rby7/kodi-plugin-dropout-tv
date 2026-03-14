@@ -64,7 +64,8 @@ Within the returned htmls there is this snippet:
   </script>
 ```
 
-that token can be used for the API requests
+That token can be used for the API requests - it is only valid for 5 minutes.
+Maybe the session is valid for a longer period of time.
 
 jwt token breakdown
 

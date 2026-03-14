@@ -72,7 +72,7 @@ def login(email, password):
   return token
 
 if __name__ == "__main__":
-  logger.warning("Reverse Engineering Droput.tv WEB")
+  logger.warning("Reverse Engineering Dropout.tv WEB")
   bearerToken = login(args.email, args.password)
 
   logger.info(f"Retreived token: {bearerToken}")
