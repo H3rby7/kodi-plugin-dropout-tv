@@ -6,6 +6,9 @@ import argcomplete
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-ll', '--log-level', action='store', dest='log_level', help='Log Level', default='INFO')
+parser.add_argument('-lr', '--log-responses', action='store', dest='log_respones', help='Log Responses', default=False)
+parser.add_argument('-lh', '--log-headers', action='store', dest='log_headers', help='Log Headers', default=False)
+parser.add_argument('-lt', '--log-tokens', action='store', dest='log_tokens', help='Log Tokens', default=False)
 parser.add_argument('-e', '--email', action='store', dest='email', help='email address')
 parser.add_argument('-p', '--password', action='store', dest='password', help='Password')
 argcomplete.autocomplete(parser)
@@ -22,17 +25,21 @@ except Exception as err:
 
 logging.basicConfig(level=args.log_level)
 
-import requests
-from bs4 import BeautifulSoup
+from pathlib import Path
+import json
 import re
 
-import json
+import requests
+from requests.utils import dict_from_cookiejar
+from requests.utils import cookiejar_from_dict
+from bs4 import BeautifulSoup
 
-session = requests.Session()
 
 SITE_ID = 36348
 HUB_ID = 1221449
 LOGIN_URL = "https://watch.dropout.tv/login"
+BROWSE_URL = "https://watch.dropout.tv/browse"
+COOKIE_FILE = "stored-cookies.json"
 
 FEATURED_ITEMS_URL = "https://api.vhx.tv/products/featured_items"
 
@@ -42,6 +49,24 @@ class BearerAuth(requests.auth.AuthBase):
   def __call__(self, r):
     r.headers["authorization"] = "Bearer " + self.token
     return r
+
+def store_cookies(session):
+  logger.debug(f"Storing cookies to '{COOKIE_FILE}' ...")
+  cookies = dict_from_cookiejar(session.cookies)
+  Path(COOKIE_FILE).write_text(json.dumps(cookies))
+  logger.info(f"Stored cookies to '{COOKIE_FILE}'.")
+
+def load_cookies(session):
+  logger.debug(f"Loading cookies from '{COOKIE_FILE}'...")
+  cookies_file = Path(COOKIE_FILE)
+  if cookies_file.is_file():
+    logger.debug(f"Cookie file '{COOKIE_FILE}' exists ")
+    cookies = json.loads(cookies_file.read_text())
+    cookies = cookiejar_from_dict(cookies)
+    session.cookies.update(cookies)
+    logger.info(f"Loaded cookies from '{COOKIE_FILE}'.")
+  else:
+    logger.info(f"No cookie file found at '{COOKIE_FILE}'.")
 
 def write_log_response(name, response):
   if 'json' in response.headers['content-type']:
@@ -54,28 +79,19 @@ def write_log_response(name, response):
     with open(f"responses/{name}-response.txt", "wb") as f:
       f.write(response.content)
 
-  logger.debug("Response Body is:")
-  logger.debug(response.content)
+  if args.log_respones:
+    logger.debug("Response Body is:")
+    logger.debug(response.content)
 
   with open(f"responses/{name}-headers.json", "w") as f:
     json.dump(dict(response.headers), f, indent=2, sort_keys=True)
-  logger.debug("Response Headers are:")
-  logger.debug(f"{response.headers}")
+  
+  if args.log_headers:
+    logger.debug("Response Headers are:")
+    logger.debug(f"{response.headers}")
 
-def login(email, password):
-  logger.info(f"GET Login page to get session cookies...")
-  r = session.get(LOGIN_URL)
-  write_log_response("login-GET", r)
-  logger.debug(f"Session cookies are: {session.cookies.get_dict()}")
-
-  soup = BeautifulSoup(r.text, "lxml")
-
-  logger.debug("Extracting csrf param and token...")
-  csrf_param = soup.select_one("head meta[name='csrf-param']")["content"]
-  csrf_token = soup.select_one("head meta[name='csrf-token']")["content"]
-  logger.info(f"Extracted CSRF param '{csrf_param}' with value '{csrf_token}'")
-
-
+def login(session, email, password, csrf_param, csrf_token):
+  logger.debug(f"Logging in...")
   login_payload = {
     "email": email,
     "password": password,
@@ -85,11 +101,36 @@ def login(email, password):
   logger.info(f"POST Login credentials to get bearer token...")
   r = session.post(LOGIN_URL, data=login_payload)
   write_log_response("login-POST", r)
+  store_cookies(session)
 
-  match = re.search(r'window\.TOKEN\s*=\s*"([^"]+)"', r.text)
+  return get_bearer_token_from_text(r.text)
+
+def get_bearer_token_from_text(text):
+  match = re.search(r'window\.TOKEN\s*=\s*"([^"]+)"', text)
   token = match.group(1) if match else None
 
+  logged_token = token if args.log_tokens else "***"
+  logger.info(f"Retreived token: {logged_token}")
   return token
+
+def get_csrf_and_token(session, email, password):
+  logger.info(f"GET Browse page to get session cookies...")
+  r = session.get(BROWSE_URL)
+  write_log_response("login-GET", r)
+  store_cookies(session)
+
+  logger.debug("Extracting csrf-param and csrf-token...")
+  soup = BeautifulSoup(r.text, "lxml")
+  csrf_param = soup.select_one("head meta[name='csrf-param']")["content"]
+  csrf_token = soup.select_one("head meta[name='csrf-token']")["content"]
+  logged_token = csrf_token if args.log_tokens else "***"
+  logger.info(f"Extracted CSRF csrf-param '{csrf_param}' with csrf-token: {logged_token}")
+
+  bearerToken = get_bearer_token_from_text(r.text)
+  if bearerToken is None:
+    bearerToken = login(session, email, password)
+
+  return csrf_param, csrf_token, bearerToken
 
 def get_featured_items(bearerToken):
   query = {
@@ -101,7 +142,8 @@ def get_featured_items(bearerToken):
 
 if __name__ == "__main__":
   logger.warning("Reverse Engineering Dropout.tv WEB")
-  bearerToken = login(args.email, args.password)
-  get_featured_items(bearerToken)
+  session = requests.Session()
+  load_cookies(session)
+  csrf_param, csrf_token, bearerToken = get_csrf_and_token(session, args.email, args.password)
 
-  logger.info(f"Retreived token: {bearerToken}")
+  get_featured_items(bearerToken)
