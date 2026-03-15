@@ -30,13 +30,33 @@ import json
 
 session = requests.Session()
 
+SITE_ID = 36348
+HUB_ID = 1221449
 LOGIN_URL = "https://watch.dropout.tv/login"
 
+FEATURED_ITEMS_URL = "https://api.vhx.tv/products/featured_items"
+
+class BearerAuth(requests.auth.AuthBase):
+  def __init__(self, token):
+    self.token = token
+  def __call__(self, r):
+    r.headers["authorization"] = "Bearer " + self.token
+    return r
+
 def write_log_response(name, response):
-  with open(f"responses/{name}-response.html", "wb") as f:
-    f.write(response.content)
+  if 'json' in response.headers['content-type']:
+    with open(f"responses/{name}-response.json", "w") as f:
+      json.dump(response.json(), f, indent=2, sort_keys=True)
+  elif 'html' in response.headers['content-type']:
+    with open(f"responses/{name}-response.html", "wb") as f:
+      f.write(response.content)
+  else:
+    with open(f"responses/{name}-response.txt", "wb") as f:
+      f.write(response.content)
+
   logger.debug("Response Body is:")
   logger.debug(response.content)
+
   with open(f"responses/{name}-headers.json", "w") as f:
     json.dump(dict(response.headers), f, indent=2, sort_keys=True)
   logger.debug("Response Headers are:")
@@ -71,8 +91,17 @@ def login(email, password):
 
   return token
 
+def get_featured_items(bearerToken):
+  query = {
+    'site_id': SITE_ID,
+    'hub_id': HUB_ID,
+  }
+  r = session.get(FEATURED_ITEMS_URL, params=query, auth=BearerAuth(bearerToken))
+  write_log_response("featured_items-GET", r)
+
 if __name__ == "__main__":
   logger.warning("Reverse Engineering Dropout.tv WEB")
   bearerToken = login(args.email, args.password)
+  get_featured_items(bearerToken)
 
   logger.info(f"Retreived token: {bearerToken}")
