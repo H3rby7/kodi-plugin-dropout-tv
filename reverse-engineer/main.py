@@ -34,16 +34,28 @@ from requests.utils import dict_from_cookiejar
 from requests.utils import cookiejar_from_dict
 from bs4 import BeautifulSoup
 
-
 SITE_ID = 36348
+"""Dropout TV Site ID in api.vhx.tv"""
+
 HUB_ID = 1221449
+"""Dropout TV Hub ID??? in api.vhx.tv"""
+
 LOGIN_URL = "https://watch.dropout.tv/login"
+"""Dropout TV Login URL"""
+
 BROWSE_URL = "https://watch.dropout.tv/browse"
+"""Dropout TV Standard Landing Page"""
+
 COOKIE_FILE = "stored-cookies.json"
+"""File Path to store cookies"""
 
 FEATURED_ITEMS_URL = "https://api.vhx.tv/products/featured_items"
+"""API URL to Featured Items - Exemplary endpoint"""
 
 class BearerAuth(requests.auth.AuthBase):
+  """
+  Python Requests Bearer Token Auth Support
+  """
   def __init__(self, token):
     self.token = token
   def __call__(self, r):
@@ -51,12 +63,20 @@ class BearerAuth(requests.auth.AuthBase):
     return r
 
 def store_cookies(session):
+  """
+  Store the session's cookies to 'COOKIE_FILE'
+  """
   logger.debug(f"Storing cookies to '{COOKIE_FILE}' ...")
   cookies = dict_from_cookiejar(session.cookies)
   Path(COOKIE_FILE).write_text(json.dumps(cookies))
   logger.info(f"Stored cookies to '{COOKIE_FILE}'.")
 
 def load_cookies(session):
+  """
+  Load cookies from 'COOKIE_FILE' and add to the session.
+
+  If 'COOKIE_FILE' does not exist, does nothing.
+  """
   logger.debug(f"Loading cookies from '{COOKIE_FILE}'...")
   cookies_file = Path(COOKIE_FILE)
   if cookies_file.is_file():
@@ -69,6 +89,12 @@ def load_cookies(session):
     logger.info(f"No cookie file found at '{COOKIE_FILE}'.")
 
 def write_log_response(name, response):
+  """
+  Reverse Engineering Debug Utility.
+
+  Writes response and headers to the filesystem.
+  Logs response and headers, if enabled by flags.
+  """
   if 'json' in response.headers['content-type']:
     with open(f"responses/{name}-response.json", "w") as f:
       json.dump(response.json(), f, indent=2, sort_keys=True)
@@ -85,12 +111,17 @@ def write_log_response(name, response):
 
   with open(f"responses/{name}-headers.json", "w") as f:
     json.dump(dict(response.headers), f, indent=2, sort_keys=True)
-  
+
   if args.log_headers:
     logger.debug("Response Headers are:")
     logger.debug(f"{response.headers}")
 
 def login(session, email, password, csrf_param, csrf_token):
+  """
+  Log in with the provided credentials and return the retrieved bearer token.
+
+  Also stores the cookies.
+  """
   logger.debug(f"Logging in...")
   login_payload = {
     "email": email,
@@ -101,11 +132,19 @@ def login(session, email, password, csrf_param, csrf_token):
   logger.info(f"POST Login credentials to get bearer token...")
   r = session.post(LOGIN_URL, data=login_payload)
   write_log_response("login-POST", r)
+  # TODO: If response != 200 or is 200, but 'wrong credentials'
   store_cookies(session)
 
-  return get_bearer_token_from_text(r.text)
+  token = get_bearer_token_from_text(r.text)
+  # TODO: Throw/Handle if token is still 'None'
+  return token
 
 def get_bearer_token_from_text(text):
+  """
+  Search for the value of window.TOKEN within the text.
+
+  Usually this value is present within the html requests to dropout.tv after being logged in.
+  """
   match = re.search(r'window\.TOKEN\s*=\s*"([^"]+)"', text)
   token = match.group(1) if match else None
 
@@ -113,26 +152,45 @@ def get_bearer_token_from_text(text):
   logger.info(f"Retreived token: {logged_token}")
   return token
 
-def get_csrf_and_token(session, email, password):
-  logger.info(f"GET Browse page to get session cookies...")
-  r = session.get(BROWSE_URL)
-  write_log_response("login-GET", r)
-  store_cookies(session)
+def get_csrf(text):
+  """
+  Get the CSRF param and token from a text.
 
+  Usually these values are present within <meta> tags inside the <head> of the html
+  """
   logger.debug("Extracting csrf-param and csrf-token...")
-  soup = BeautifulSoup(r.text, "lxml")
+  soup = BeautifulSoup(text, "lxml")
   csrf_param = soup.select_one("head meta[name='csrf-param']")["content"]
   csrf_token = soup.select_one("head meta[name='csrf-token']")["content"]
   logged_token = csrf_token if args.log_tokens else "***"
   logger.info(f"Extracted CSRF csrf-param '{csrf_param}' with csrf-token: {logged_token}")
+  return csrf_param, csrf_token
+
+def get_csrf_and_token(session, email, password):
+  """
+  Wrapper to get CSRF and Bearer Token.
+
+  Uses existing session from FS - Logs back in if necessary
+  """
+  logger.info(f"GET Browse page to get session cookies...")
+  r = session.get(BROWSE_URL)
+  write_log_response("browse-GET", r)
+  # TODO: If response != 200
+  store_cookies(session)
+
+  csrf_param, csrf_token = get_csrf(r.text)
 
   bearerToken = get_bearer_token_from_text(r.text)
   if bearerToken is None:
+    logger.debug("Bearer Token is 'None', falling back to login")
     bearerToken = login(session, email, password)
 
   return csrf_param, csrf_token, bearerToken
 
 def get_featured_items(bearerToken):
+  """
+  Calls api.vhx.tv for featured items
+  """
   query = {
     'site_id': SITE_ID,
     'hub_id': HUB_ID,
@@ -144,6 +202,7 @@ if __name__ == "__main__":
   logger.warning("Reverse Engineering Dropout.tv WEB")
   session = requests.Session()
   load_cookies(session)
+  # TODO: csrf_param, csrf_token need to be stored?
   csrf_param, csrf_token, bearerToken = get_csrf_and_token(session, args.email, args.password)
 
   get_featured_items(bearerToken)
