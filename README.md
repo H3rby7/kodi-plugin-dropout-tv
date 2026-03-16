@@ -6,3 +6,7 @@ plugin allowing to watch
 [Dropout TV](https://watch.dropout.tv/help).
 
 Requires a valid subscription to droput.tv
+
+# Contributing
+
+For developing see [dev Readme](./dev/README.md)
