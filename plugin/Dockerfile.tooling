@@ -1,0 +1,7 @@
+FROM alpine:3.23.3
+RUN apk update && \
+    apk add --no-cache --update-cache libxml2-utils
+RUN mkdir -p /src
+WORKDIR /src
+ENTRYPOINT ["xmllint"]
+CMD ["--help"]

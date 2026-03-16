@@ -1,0 +1,14 @@
+services:
+  xml:
+    # https://gnome.pages.gitlab.gnome.org/libxml2/xmllint.html
+    build:
+      context: .
+      dockerfile: ./Dockerfile.tooling
+    command:
+      - --noout
+      - --schema
+      - /schema/addon.xsd
+      - /src/addon.xml
+    volumes:
+      - ./src:/src
+      - ./schema:/schema
