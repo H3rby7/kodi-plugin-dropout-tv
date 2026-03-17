@@ -13,6 +13,7 @@ parser.add_argument('-e', '--email', action='store', dest='email', help='email a
 parser.add_argument('-p', '--password', action='store', dest='password', help='Password')
 argcomplete.autocomplete(parser)
 
+args = None
 try:
     args = parser.parse_args()
 except ImportError:
@@ -23,6 +24,9 @@ except AttributeError:
 except Exception as err:
     logger.error("Error:", err)
 
+if args is None:
+  exit(1)
+
 logging.basicConfig(level=args.log_level)
 
 from pathlib import Path
@@ -30,6 +34,7 @@ import json
 import re
 
 import requests
+from requests.auth import AuthBase
 from requests.utils import dict_from_cookiejar
 from requests.utils import cookiejar_from_dict
 from bs4 import BeautifulSoup
@@ -52,7 +57,7 @@ COOKIE_FILE = "stored-cookies.json"
 FEATURED_ITEMS_URL = "https://api.vhx.tv/products/featured_items"
 """API URL to Featured Items - Exemplary endpoint"""
 
-class BearerAuth(requests.auth.AuthBase):
+class BearerAuth(AuthBase):
   """
   Python Requests Bearer Token Auth Support
   """
