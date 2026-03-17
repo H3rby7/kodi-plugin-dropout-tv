@@ -5,6 +5,9 @@
         <setting label="32012" type="text"   id="password" option="hidden"  enable="!eq(-1,)" default=""/>
     </category>
     <category label="32090">
-        <setting id="debug" type="bool" label="32099" default="false"/>
+        <setting label="32091" type="text"   id="cookiefile" default="special://profile/addon_data/plugin.video.dropout.tv/cookie-store.json"/>
+        <setting label="32092" type="bool"   id="logtokens"  default="false"/>
+        <!-- TODO: Add Clear Cache BTN -->
+        <setting label="32099" type="bool"   id="debug"  default="false"/>
     </category>
 </settings>

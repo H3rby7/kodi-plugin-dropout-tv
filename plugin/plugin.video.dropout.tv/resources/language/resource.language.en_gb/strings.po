@@ -32,6 +32,10 @@ msgctxt "#32012"
 msgid "Password"
 msgstr ""
 
+msgctxt "#32091"
+msgid "Cookie Store File Path"
+msgstr ""
+
 msgctxt "#32099"
 msgid "Enable Debug Logging"
 msgstr ""
