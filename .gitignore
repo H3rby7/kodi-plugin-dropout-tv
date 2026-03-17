@@ -2,3 +2,6 @@
 !*example.env
 
 stored-cookies.json
+
+.vscode/*
+!.vscode/launch.json

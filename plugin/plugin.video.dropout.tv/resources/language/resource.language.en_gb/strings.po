@@ -1,0 +1,37 @@
+# Kodi Media Center language file
+# Addon Name: Dropout TV
+# Addon id: plugin.video.dropout.tv
+# Addon Provider: H3rby7
+msgid ""
+msgstr ""
+"Project-Id-Version: Kodi Addons\n"
+"Report-Msgid-Bugs-To: translations@kodi.tv\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: H3rby7\n"
+"Language-Team: English (https://kodi.weblate.cloud/languages/en_gb/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "#32010"
+msgid "Login"
+msgstr ""
+
+msgctxt "#32090"
+msgid "Troubleshooting"
+msgstr ""
+
+msgctxt "#32011"
+msgid "Email Address"
+msgstr ""
+
+msgctxt "#32012"
+msgid "Password"
+msgstr ""
+
+msgctxt "#32099"
+msgid "Enable Debug Logging"
+msgstr ""
