@@ -201,7 +201,6 @@ if __name__ == "__main__":
   logger.warning("Reverse Engineering Dropout.tv WEB")
   session = requests.Session()
   load_cookies(session)
-  # TODO: csrf_param, csrf_token need to be stored?
   bearerToken = get_bearer_token(session, args.email, args.password)
 
   get_featured_items(bearerToken)
