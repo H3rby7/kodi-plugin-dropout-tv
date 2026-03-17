@@ -166,9 +166,9 @@ def get_csrf(text):
   logger.info(f"Extracted CSRF csrf-param '{csrf_param}' with csrf-token: {logged_token}")
   return csrf_param, csrf_token
 
-def get_csrf_and_token(session, email, password):
+def get_bearer_token(session, email, password):
   """
-  Wrapper to get CSRF and Bearer Token.
+  Wrapper to get Bearer Token.
 
   Uses existing session from FS - Logs back in if necessary
   """
@@ -178,14 +178,13 @@ def get_csrf_and_token(session, email, password):
   # TODO: If response != 200
   store_cookies(session)
 
-  csrf_param, csrf_token = get_csrf(r.text)
-
   bearerToken = get_bearer_token_from_text(r.text)
-  if bearerToken is None:
-    logger.debug("Bearer Token is 'None', falling back to login")
-    bearerToken = login(session, email, password, csrf_param, csrf_token)
+  if bearerToken is not None:
+    return bearerToken
 
-  return csrf_param, csrf_token, bearerToken
+  logger.debug("Bearer Token is 'None', falling back to login")
+  csrf_param, csrf_token = get_csrf(r.text)
+  return login(session, email, password, csrf_param, csrf_token)
 
 def get_featured_items(bearerToken):
   """
@@ -203,6 +202,6 @@ if __name__ == "__main__":
   session = requests.Session()
   load_cookies(session)
   # TODO: csrf_param, csrf_token need to be stored?
-  csrf_param, csrf_token, bearerToken = get_csrf_and_token(session, args.email, args.password)
+  bearerToken = get_bearer_token(session, args.email, args.password)
 
   get_featured_items(bearerToken)
