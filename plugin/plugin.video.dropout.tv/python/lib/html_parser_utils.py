@@ -35,7 +35,19 @@ def get_csrf(constants: PluginConstants, text: str):
   """
   logger.debug("Extracting csrf-param and csrf-token...")
   soup = BeautifulSoup(text, "lxml")
-  csrf_param = soup.select_one("head meta[name='csrf-param']")["content"]
-  csrf_token = soup.select_one("head meta[name='csrf-token']")["content"]
+
+  csrf_param_tag = soup.select_one("head meta[name='csrf-param']")
+  csrf_token_tag = soup.select_one("head meta[name='csrf-token']")
+  if not csrf_param_tag or not csrf_token_tag:
+    logger.error("HTML does not contain 'CSRF'")
+    return None, None
+
+  csrf_param: str = csrf_param_tag["content"]
+  csrf_token: str = csrf_token_tag["content"]
+
+  if not isinstance(csrf_param, str) or not isinstance(csrf_token, str):
+    logger.error("HTML does not contain 'CSRF'")
+    return None, None
+
   logger.info(f"Extracted CSRF csrf-param '{csrf_param}' with csrf-token: {_token_or_stars(constants, csrf_token)}")
   return csrf_param, csrf_token

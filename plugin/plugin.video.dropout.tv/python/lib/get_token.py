@@ -51,4 +51,8 @@ def get_bearer_token(constants: PluginConstants, session: requests.Session):
 
   logger.debug("Bearer Token is 'None', falling back to login")
   csrf_param, csrf_token = get_csrf(constants, r.text)
+  if csrf_param is None or csrf_token is None:
+    logger.error("CSRF is 'None', cannot login")
+    return None
+
   return login(constants, session, csrf_param, csrf_token)
