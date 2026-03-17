@@ -183,7 +183,7 @@ def get_csrf_and_token(session, email, password):
   bearerToken = get_bearer_token_from_text(r.text)
   if bearerToken is None:
     logger.debug("Bearer Token is 'None', falling back to login")
-    bearerToken = login(session, email, password)
+    bearerToken = login(session, email, password, csrf_param, csrf_token)
 
   return csrf_param, csrf_token, bearerToken
 
