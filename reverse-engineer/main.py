@@ -110,14 +110,14 @@ def write_log_response(name, response):
     with open(f"responses/{name}-response.txt", "wb") as f:
       f.write(response.content)
 
-  if args.log_respones:
+  if args is not None and args.log_respones:
     logger.debug("Response Body is:")
     logger.debug(response.content)
 
   with open(f"responses/{name}-headers.json", "w") as f:
     json.dump(dict(response.headers), f, indent=2, sort_keys=True)
 
-  if args.log_headers:
+  if args is not None and args.log_headers:
     logger.debug("Response Headers are:")
     logger.debug(f"{response.headers}")
 
@@ -153,7 +153,7 @@ def get_bearer_token_from_text(text):
   match = re.search(r'window\.TOKEN\s*=\s*"([^"]+)"', text)
   token = match.group(1) if match else None
 
-  logged_token = token if args.log_tokens else "***"
+  logged_token = token if args is not None and args.log_tokens else "***"
   logger.info(f"Retreived token: {logged_token}")
   return token
 
@@ -167,7 +167,7 @@ def get_csrf(text):
   soup = BeautifulSoup(text, "lxml")
   csrf_param = soup.select_one("head meta[name='csrf-param']")["content"]
   csrf_token = soup.select_one("head meta[name='csrf-token']")["content"]
-  logged_token = csrf_token if args.log_tokens else "***"
+  logged_token = csrf_token if args is not None and args.log_tokens else "***"
   logger.info(f"Extracted CSRF csrf-param '{csrf_param}' with csrf-token: {logged_token}")
   return csrf_param, csrf_token
 
