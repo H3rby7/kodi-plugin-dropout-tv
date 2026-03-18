@@ -1,13 +1,15 @@
 import logging
 logger = logging.getLogger(__name__)
 
+from typing import Optional, Tuple
+
 import xbmcplugin
 import re
 from bs4 import BeautifulSoup
 
 from ..constants import PluginConstants
 
-def _token_or_stars(constants: PluginConstants, token: str | None):
+def _token_or_stars(constants: PluginConstants, token: str):
   """
   Returns the token, if token logging is enabled, else returns ***
   """
@@ -15,7 +17,7 @@ def _token_or_stars(constants: PluginConstants, token: str | None):
   return token if log_token else "***"
 
 
-def get_bearer_token_from_text(constants: PluginConstants, text: str) -> tuple[None | str, str]:
+def get_bearer_token_from_text(constants: PluginConstants, text: str) -> Tuple[Optional[str], str]:
   """
   Search for the value of window.TOKEN within the text.
 
@@ -31,7 +33,7 @@ def get_bearer_token_from_text(constants: PluginConstants, text: str) -> tuple[N
   logger.info(f"Retreived token: {_token_or_stars(constants, token)}")
   return None, token
 
-def get_csrf(constants: PluginConstants, text: str) -> tuple[None | str, str, str]:
+def get_csrf(constants: PluginConstants, text: str) -> Tuple[Optional[str], str, str]:
   """
   Get the CSRF param and token from a text.
 

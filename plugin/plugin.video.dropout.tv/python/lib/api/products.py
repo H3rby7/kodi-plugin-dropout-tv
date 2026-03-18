@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 import requests
 
 from ..constants import PluginConstants
-from bearer_auth import BearerAuth
-from model import FeaturedItemsResponse
+from .bearer_auth import BearerAuth
+from .model import FeaturedItemsResponse
 
 def get_featured_items(constants: PluginConstants, session: requests.Session, bearerToken: str):
   """

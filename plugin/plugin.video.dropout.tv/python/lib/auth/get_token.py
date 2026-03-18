@@ -1,17 +1,18 @@
 import logging
+logger = logging.getLogger(__name__)
 
 import requests
-logger = logging.getLogger(__name__)
+from typing import Optional, Tuple
 
 import xbmcplugin
 import xbmcaddon
 
 from ..constants import PluginConstants
-from html_parser_utils import get_bearer_token_from_text
-from html_parser_utils import get_csrf
-from cookies import store_cookies_from_session
+from .html_parser_utils import get_bearer_token_from_text
+from .html_parser_utils import get_csrf
+from .cookies import store_cookies_from_session
 
-def get_credentials(constants: PluginConstants) -> tuple[None | str, str, str]:
+def get_credentials(constants: PluginConstants) -> Tuple[Optional[str], str, str]:
   """
   Get Credentials from settings, or opens settings if they are not yet set.
   """
@@ -23,7 +24,7 @@ def get_credentials(constants: PluginConstants) -> tuple[None | str, str, str]:
   else:
     return None, email, password
 
-def login(constants: PluginConstants, session: requests.Session, csrf_param: str, csrf_token: str) -> tuple[None | str, str]:
+def login(constants: PluginConstants, session: requests.Session, csrf_param: str, csrf_token: str) -> Tuple[Optional[str], str]:
   """
   Log in with the provided credentials and return the retrieved bearer token.
 
@@ -49,7 +50,7 @@ def login(constants: PluginConstants, session: requests.Session, csrf_param: str
   err, token = get_bearer_token_from_text(constants, r.text)
   return err, token
 
-def get_bearer_token(constants: PluginConstants, session: requests.Session) -> tuple[None | str, str]:
+def get_bearer_token(constants: PluginConstants, session: requests.Session) -> Tuple[Optional[str], str]:
   """
   Wrapper to get Bearer Token.
 
