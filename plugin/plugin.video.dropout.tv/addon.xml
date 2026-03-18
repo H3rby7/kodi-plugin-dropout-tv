@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.dropout.tv" name="Dropout TV" version="0.1.0-SNAPSHOT" provider-name="H3rby7">
   <requires>
-    <import addon="xbmc.python" version="3.0.1"/>
+    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="script.module.requests" version="2.31.0" />
+    <import addon="script.module.beautifulsoup4" version="4.12.0" />
   </requires>
   <extension point="xbmc.python.pluginsource" library="python/addon.py">
     <provides>video</provides>
@@ -12,7 +14,7 @@
     <disclaimer lang="en_GB">Requires a valid dropout.tv subscription!</disclaimer>
     <language>en</language> <!-- (dropout.tv is english content) -->
     <platform>all</platform>
-    <license>GPL-3.0-only	</license>
+    <license>GPL-3.0-only</license>
     <source>https://github.com/H3rby7/kodi-plugin-dropout-tv</source>
     <news>v0.1.0-SNAPSHOT (15/03/2026)
       [new] work in progress

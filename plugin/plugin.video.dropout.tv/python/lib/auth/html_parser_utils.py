@@ -5,7 +5,7 @@ import xbmcplugin
 import re
 from bs4 import BeautifulSoup
 
-from constants import PluginConstants
+from ..constants import PluginConstants
 
 def _token_or_stars(constants: PluginConstants, token: str | None):
   """

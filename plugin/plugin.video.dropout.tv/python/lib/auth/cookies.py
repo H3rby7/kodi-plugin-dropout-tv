@@ -7,7 +7,7 @@ import xbmcplugin
 
 import json
 
-from constants import PluginConstants
+from ..constants import PluginConstants
 from requests.utils import dict_from_cookiejar
 from requests.utils import cookiejar_from_dict
 

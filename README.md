@@ -14,3 +14,7 @@ For developing see [dev Readme](./dev/README.md)
 ## Language
 
 https://kodi.wiki/view/Language_support
+
+## Module Addons
+
+https://kodi.wiki/view/Category:Add-on_libraries/modules

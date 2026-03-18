@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 import xbmcplugin
 import xbmcaddon
 
-from constants import PluginConstants
+from ..constants import PluginConstants
 from html_parser_utils import get_bearer_token_from_text
 from html_parser_utils import get_csrf
 from cookies import store_cookies_from_session

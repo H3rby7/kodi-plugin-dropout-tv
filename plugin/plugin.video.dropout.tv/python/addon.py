@@ -1,8 +1,12 @@
 import sys
+import requests
 import xbmcgui
 import xbmcplugin
 
 from lib.constants import PluginConstants
+from lib.auth.cookies import load_cookies_to_session
+from lib.auth.get_token import get_bearer_token
+from lib.api.products import get_featured_items
 
 constants = PluginConstants(
   addon_handle=int(sys.argv[1]),
@@ -15,9 +19,19 @@ constants = PluginConstants(
 
 xbmcplugin.setContent(constants.addon_handle, 'tvshows')
 
-url = 'http://localhost/some_video.mkv'
-li = xbmcgui.ListItem('My First Video!')
-li.setArt({'thumb': 'DefaultVideo.png'})
-xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=url, listitem=li)
+session = requests.Session()
+load_cookies_to_session(constants, session)
+err, bearerToken = get_bearer_token(constants, session)
 
-xbmcplugin.endOfDirectory(constants.addon_handle)
+if err:
+  xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url="plugin://", listitem=xbmcgui.ListItem('Could not get FeaturedItems!'))
+  xbmcplugin.endOfDirectory(constants.addon_handle)
+else:
+  items = get_featured_items(constants, session, bearerToken)
+  for collection in items._embedded.items:
+    url = f"plugin://{collection.slug}"
+    li = xbmcgui.ListItem(collection.name)
+    li.setArt({'thumb': collection.thumbnail.small})
+    xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=url, listitem=li, isFolder=True)
+
+  xbmcplugin.endOfDirectory(constants.addon_handle)
