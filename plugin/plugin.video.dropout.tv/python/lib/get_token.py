@@ -4,21 +4,37 @@ import requests
 logger = logging.getLogger(__name__)
 
 import xbmcplugin
+import xbmcaddon
 
 from constants import PluginConstants
 from html_parser_utils import get_bearer_token_from_text
 from html_parser_utils import get_csrf
 from cookies import store_cookies_from_session
 
-def login(constants: PluginConstants, session: requests.Session, csrf_param: str, csrf_token: str):
+def get_credentials(constants: PluginConstants) -> tuple[None | str, str, str]:
+  """
+  Get Credentials from settings, or opens settings if they are not yet set.
+  """
+  email = xbmcplugin.getSetting(constants.addon_handle, 'email')
+  password = xbmcplugin.getSetting(constants.addon_handle, 'password')
+  if not email or not password:
+    xbmcaddon.Addon().openSettings()
+    return "Missing Credentials", "", ""
+  else:
+    return None, email, password
+
+def login(constants: PluginConstants, session: requests.Session, csrf_param: str, csrf_token: str) -> tuple[None | str, str]:
   """
   Log in with the provided credentials and return the retrieved bearer token.
 
   Also stores the cookies.
   """
   logger.debug(f"Logging in...")
-  email = xbmcplugin.getSetting(constants.addon_handle, 'email')
-  password = xbmcplugin.getSetting(constants.addon_handle, 'password')
+  err, email, password = get_credentials(constants)
+  if err:
+    return err, ""
+
+  logger.debug(f"Credentials are present.")
   login_payload = {
     "email": email,
     "password": password,
@@ -30,11 +46,10 @@ def login(constants: PluginConstants, session: requests.Session, csrf_param: str
   # TODO: If response != 200 or is 200, but 'wrong credentials'
   store_cookies_from_session(constants, session)
 
-  token = get_bearer_token_from_text(constants, r.text)
-  # TODO: Throw/Handle if token is still 'None'
-  return token
+  err, token = get_bearer_token_from_text(constants, r.text)
+  return err, token
 
-def get_bearer_token(constants: PluginConstants, session: requests.Session):
+def get_bearer_token(constants: PluginConstants, session: requests.Session) -> tuple[None | str, str]:
   """
   Wrapper to get Bearer Token.
 
@@ -45,14 +60,13 @@ def get_bearer_token(constants: PluginConstants, session: requests.Session):
   # TODO: If response != 200
   store_cookies_from_session(constants, session)
 
-  bearerToken = get_bearer_token_from_text(constants, r.text)
-  if bearerToken is not None:
-    return bearerToken
+  err, bearerToken = get_bearer_token_from_text(constants, r.text)
+  if not err:
+    return None, bearerToken
 
-  logger.debug("Bearer Token is 'None', falling back to login")
-  csrf_param, csrf_token = get_csrf(constants, r.text)
-  if csrf_param is None or csrf_token is None:
-    logger.error("CSRF is 'None', cannot login")
-    return None
+  logger.debug(f"Error when tryint to get bearer token: {err}, falling back to login")
+  err, csrf_param, csrf_token = get_csrf(constants, r.text)
+  if err:
+    return err, ""
 
   return login(constants, session, csrf_param, csrf_token)
