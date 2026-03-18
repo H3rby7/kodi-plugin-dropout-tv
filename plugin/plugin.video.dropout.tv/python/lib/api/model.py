@@ -1,55 +1,42 @@
-from dataclasses import dataclass
-from typing import List, Optional
+from typing import TypedDict, List, Optional
 
-# --- Generic link structures ---
-@dataclass
-class Link:
+class Link(TypedDict, total=False):
   href: Optional[str]
 
-@dataclass
-class PaginationLinks:
+class PaginationLinks(TypedDict):
   first: Link
   last: Link
   next: Link
   prev: Link
-  self_link: Link  # renamed to avoid keyword clash
+  self_link: Link
 
-# --- Embedded item link ---
-@dataclass
-class CollectionPageLink:
+class CollectionPageLink(TypedDict):
   href: str
 
-@dataclass
-class ItemLinks:
+class ItemLinks(TypedDict):
   collection_page: CollectionPageLink
 
-# --- Images ---
-@dataclass
-class ImageVariant:
-  large: Optional[str] = None
-  source: str = ""
+class ImageVariant(TypedDict, total=False):
+  large: Optional[str]
+  source: str
 
-@dataclass
-class AdditionalImages:
-  aspect_ratio_12_5_logo: Optional[ImageVariant] = None
-  aspect_ratio_16_14: Optional[ImageVariant] = None
-  aspect_ratio_16_6: Optional[ImageVariant] = None
-  aspect_ratio_16_9_background: Optional[ImageVariant] = None
+class AdditionalImages(TypedDict, total=False):
+  aspect_ratio_12_5_logo: Optional[ImageVariant]
+  aspect_ratio_16_14: Optional[ImageVariant]
+  aspect_ratio_16_6: Optional[ImageVariant]
+  aspect_ratio_16_9_background: Optional[ImageVariant]
 
-@dataclass
-class Thumbnail:
+class Thumbnail(TypedDict):
   blurred: str
   large: str
   medium: str
   small: str
   source: str
 
-# --- Main item ---
-@dataclass
-class Item:
+class Item(TypedDict):
   _links: ItemLinks
   additional_images: AdditionalImages
-  created_at: str  # or datetime
+  created_at: str
   description: str
   id: int
   name: str
@@ -59,16 +46,12 @@ class Item:
   thumbnail: Thumbnail
   trailer_url: str
   type: str
-  updated_at: str  # or datetime
+  updated_at: str
 
-# --- Embedded wrapper ---
-@dataclass
-class Embedded:
+class Embedded(TypedDict):
   items: List[Item]
 
-# --- Root response ---
-@dataclass
-class FeaturedItemsResponse:
+class FeaturedItemsResponse(TypedDict):
   _embedded: Embedded
   _links: PaginationLinks
   count: int

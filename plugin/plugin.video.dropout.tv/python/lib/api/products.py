@@ -16,4 +16,6 @@ def get_featured_items(constants: PluginConstants, session: requests.Session, be
     'hub_id': constants.hub_id,
   }
   r = session.get(constants.url_api_featured, params=query, auth=BearerAuth(bearerToken))
-  return FeaturedItemsResponse(**r.json())
+
+  featuredItems: FeaturedItemsResponse = r.json()
+  return featuredItems

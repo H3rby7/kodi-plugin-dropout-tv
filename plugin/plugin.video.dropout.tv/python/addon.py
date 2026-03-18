@@ -27,11 +27,13 @@ if err:
   xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url="plugin://", listitem=xbmcgui.ListItem('Could not get FeaturedItems!'))
   xbmcplugin.endOfDirectory(constants.addon_handle)
 else:
-  items = get_featured_items(constants, session, bearerToken)
-  for collection in items._embedded.items:
-    url = f"plugin://{collection.slug}"
-    li = xbmcgui.ListItem(collection.name)
-    li.setArt({'thumb': collection.thumbnail.small})
-    xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=url, listitem=li, isFolder=True)
+  features = get_featured_items(constants, session, bearerToken)
+  for collection in features['_embedded']['items']:
+    # these items can be a series, live or even videos
+    # in case of being a video they dont have a slug attr.
+    slug = collection.get('slug', '')
+    li = xbmcgui.ListItem(collection['name'])
+    li.setArt({'thumb': collection['thumbnail']['large']})
+    xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=f"plugin://{slug}", listitem=li, isFolder=True)
 
   xbmcplugin.endOfDirectory(constants.addon_handle)
