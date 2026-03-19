@@ -8,9 +8,9 @@
   <extension point="xbmc.python.pluginsource" library="python/addon.py">
     <provides>video</provides>
   </extension>
-  <extension point="xbmc.addon.video">
+  <extension point="xbmc.addon.metadata">
     <summary lang="en_GB">Access your dropout.tv content on Kodi</summary>
-    <description lang="en_GB">Dropout is an American comedy subscription streaming service run by the production company of the same name (formerly CollegeHumor), founded in September 2018. Its ad-free original shows are mainly composed of live play, such as Dimension 20 hosted by Brennan Lee Mulligan, and improv comedy and panel shows like Game Changer and its spinoff Make Some Noise, both hosted by Dropout owner and CEO Sam Reich, and Very Important People hosted by Vic Michaelis. Dropout's series often feature a rotating cast of regular comedians and performers.</description>
+    <description lang="en_GB">Dropout is an American comedy subscription streaming service. Its ad-free original shows are mainly composed of live play and improv comedy and panel shows. Dropout's series often feature a rotating cast of regular comedians and performers.</description>
     <disclaimer lang="en_GB">Requires a valid dropout.tv subscription!</disclaimer>
     <language>en</language> <!-- (dropout.tv is english content) -->
     <platform>all</platform>
@@ -20,8 +20,8 @@
       [new] work in progress
     </news>
     <assets>
-        <icon>resources/icon.png</icon>
-        <fanart>resources/fanart.jpg</fanart>
+      <icon>resources/icon.png</icon>
+      <fanart>resources/fanart.jpg</fanart>
     </assets>
   </extension>
 </addon>
