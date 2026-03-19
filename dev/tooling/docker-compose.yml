@@ -3,12 +3,12 @@ services:
     # https://gnome.pages.gitlab.gnome.org/libxml2/xmllint.html
     build:
       context: .
-      dockerfile: ./Dockerfile.tooling
+      dockerfile: ./Dockerfile.xmllint
     command:
       - --noout
       - --schema
       - /schema/addon.xsd
-      - /src/addon.xml
+      - /src/plugin.video.dropout.tv/addon.xml
     volumes:
-      - ./src:/src
+      - ../../src:/src
       - ./schema:/schema

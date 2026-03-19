@@ -11,4 +11,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: plugin.video.dropout.tv-0.1.0-alpha
-          path: ${{ github.workspace }}/plugin/plugin.video.dropout.tv
+          path: ${{ github.workspace }}/plugin
