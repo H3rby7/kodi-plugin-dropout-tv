@@ -32,7 +32,7 @@
         <category id="troubleshoot" label="32090" help="">
             <group id="logs" label="">
                 <!-- ********************** LOG LEVEL ********************** -->
-                <setting label="32091" type="integer"   id="loglevel">
+                <setting label="32091" type="integer"   id="loglevel" help="">
                     <level>2</level>
                     <default>2</default>
                     <constraints>
@@ -53,7 +53,7 @@
                 </setting>
 
                 <!-- ********************** LOG TOKENS? ********************** -->
-                <setting label="32092" type="boolean"   id="logtokens">
+                <setting label="32092" type="boolean"   id="logtokens" help="">
                     <level>3</level>
                     <default>false</default>
                     <control type="toggle"/>
@@ -61,7 +61,7 @@
             </group>
             <group id="nevervisible" label="">
                 <!-- ********************** COOKIE FILE PATH ********************** -->
-                <setting label="32093" type="string"   id="cookiefile">
+                <setting label="32093" type="string"   id="cookiefile" help="">
                     <level>4</level>
                     <default>special://profile/addon_data/plugin.video.dropout.tv/cookie-store.json</default>
                     <constraints>

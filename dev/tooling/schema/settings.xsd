@@ -5,10 +5,14 @@
 
   <xs:complexType name="ControlType">
   <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="close" type="BoolString"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="data" type="xs:string"  minOccurs="0" maxOccurs="1" />
       <xs:element name="heading" type="LabelReference"  minOccurs="0" maxOccurs="1" />
-      <xs:element name="hidden" type="xs:boolean"  minOccurs="0" maxOccurs="1" />
-      <xs:element name="multiselect" type="xs:boolean"  minOccurs="0" maxOccurs="1" />
-      <xs:element name="hidevalue" type="xs:boolean"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="hidden" type="BoolString"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="hidevalue" type="BoolString"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="multiselect" type="BoolString"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="popup" type="BoolString"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="formatlabel" type="LabelReference"  minOccurs="0" maxOccurs="1" />
     </xs:choice>
     <xs:attribute name="type" type="ControlTypeType" use="required"/>
     <xs:attribute name="format" type="FormatType" use="optional"/>
@@ -16,10 +20,13 @@
 
   <xs:complexType name="ConstraintsType">
     <xs:choice maxOccurs="unbounded">
-      <xs:element name="allowempty" type="xs:boolean"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="allowempty" type="BoolString"  minOccurs="0" maxOccurs="1" />
       <xs:element name="delimiter" type="xs:string"  minOccurs="0" maxOccurs="1" />
-      <xs:element name="minimumitems" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="maximum" type="xs:decimal"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="minimum" type="xs:decimal"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="minimumitems" type="xs:nonNegativeInteger"  minOccurs="0" maxOccurs="1" />
       <xs:element name="options" type="OptionsType"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="step" type="xs:decimal"  minOccurs="0" maxOccurs="1" />
     </xs:choice>
   </xs:complexType>
 
@@ -39,15 +46,20 @@
 
   <xs:complexType name="SettingType">
     <xs:choice maxOccurs="unbounded">
-      <xs:element name="control" type="ControlType" minOccurs="0" maxOccurs="1"/>
-      <xs:element name="level" type="xs:nonNegativeInteger"  minOccurs="0" maxOccurs="1" />
-      <xs:element name="default" type="xs:string"  minOccurs="0" maxOccurs="1" />
       <xs:element name="constraints" type="ConstraintsType"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="control" type="ControlType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="data" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="default" type="xs:anySimpleType"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="dependencies" type="DependenciesType"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="enable" type="BoolString"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="level" type="xs:nonNegativeInteger"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="visible" type="BoolString"  minOccurs="0" maxOccurs="1" />
     </xs:choice>
-    <xs:attribute name="id" type="xs:string" use="required"/>
-    <xs:attribute name="type" type="SettingsTypeType" use="required"/>
-    <xs:attribute name="label" type="LabelReference" use="required"/>
     <xs:attribute name="help" type="LabelReference" use="optional"/>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="label" type="LabelReference" use="optional"/>
+    <xs:attribute name="parent" type="xs:string" use="optional"/>
+    <xs:attribute name="type" type="SettingsTypeType" use="required"/>
   </xs:complexType>
 
   <xs:complexType name="GroupType">
@@ -79,6 +91,33 @@
       <xs:element name="section" type="SectionType" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="version" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="DependenciesType">
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="dependency" type="SingleDependencyType" minOccurs="1" maxOccurs="unbounded"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="SingleDependencyType" mixed="true">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="and" type="SingleDependencyType"/>
+      <xs:element name="or" type="SingleDependencyType"/>
+      <xs:element name="condition" type="ConditionType"/>
+    </xs:choice>
+    <xs:attribute name="setting" type="xs:string" use="optional"/>
+    <xs:attribute name="type" type="DependencyTypeType" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="ConditionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:anySimpleType">
+        <xs:attribute name="setting" type="xs:string" use="optional"/>
+        <xs:attribute name="operator" type="OperatorType" use="optional"/>
+        <xs:attribute name="name" type="xs:string" use="optional"/>
+        <xs:attribute name="on" type="xs:string" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
   <xs:simpleType name="FormatType">
@@ -128,9 +167,32 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="DependencyTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="enable"/>
+      <xs:enumeration value="visible"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="OperatorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="is"/>
+      <xs:enumeration value="!is"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="LabelReference">
     <xs:restriction base="xs:string">
       <xs:pattern value="([1-9]([0-9])*)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="BoolString">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="True"/>
+      <xs:enumeration value="false"/>
+      <xs:enumeration value="False"/>
     </xs:restriction>
   </xs:simpleType>
 
