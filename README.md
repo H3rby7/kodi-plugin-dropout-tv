@@ -7,9 +7,14 @@ plugin allowing to watch
 
 Requires a valid subscription to droput.tv
 
-# Contributing
+# Developing
 
-For developing see [dev Readme](./dev/README.md)
+## Tooling
+
+```sh
+# Validate addon.xml and settings.xml
+docker-compose -f dev/tooling/docker-compose.yml up --build
+```
 
 ## Language
 
