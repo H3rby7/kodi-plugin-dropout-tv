@@ -4,7 +4,7 @@ class PluginConstants():
   """
   def __init__(
       self,
-      base_url: int,
+      base_url: str,
       addon_handle: int,
       site_id: int,
       hub_id: int,

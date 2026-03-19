@@ -14,7 +14,7 @@ from lib.api.products import get_featured_items
 from lib.render.item import render_item
 
 constants = PluginConstants(
-  base_url=int(sys.argv[0]),
+  base_url=sys.argv[0],
   addon_handle=int(sys.argv[1]),
   site_id=36348,
   hub_id=1221449,
@@ -36,7 +36,7 @@ err, bearerToken = get_bearer_token(constants, session)
 
 if err:
   logger.error("Could not access dropout.tv")
-  xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url="plugin://", listitem=xbmcgui.ListItem('Could not get FeaturedItems!'))
+  xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=constants.base_url, listitem=xbmcgui.ListItem('Could not get FeaturedItems!'))
   xbmcplugin.endOfDirectory(constants.addon_handle, updateListing=False, succeeded=False, cacheToDisc=False)
 else:
   logger.info("Getting Featured Items")
