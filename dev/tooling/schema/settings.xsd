@@ -9,7 +9,6 @@
       <xs:element name="data" type="xs:string"  minOccurs="0" maxOccurs="1" />
       <xs:element name="heading" type="LabelReference"  minOccurs="0" maxOccurs="1" />
       <xs:element name="hidden" type="BoolString"  minOccurs="0" maxOccurs="1" />
-      <xs:element name="hidevalue" type="BoolString"  minOccurs="0" maxOccurs="1" />
       <xs:element name="multiselect" type="BoolString"  minOccurs="0" maxOccurs="1" />
       <xs:element name="popup" type="BoolString"  minOccurs="0" maxOccurs="1" />
       <xs:element name="formatlabel" type="LabelReference"  minOccurs="0" maxOccurs="1" />

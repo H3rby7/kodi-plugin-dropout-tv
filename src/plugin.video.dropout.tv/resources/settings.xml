@@ -24,7 +24,7 @@
                         </constraints>
                         <control type="edit" format="string">
                             <heading>32012</heading>
-                            <hidevalue>true</hidevalue>
+                            <hidden>true</hidden>
                         </control>
                 </setting>
             </group>

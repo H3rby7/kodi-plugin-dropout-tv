@@ -15,6 +15,7 @@ Requires a valid subscription to droput.tv
 # Validate addon.xml and settings.xml
 docker-compose -f dev/tooling/docker-compose.yml up --build
 ```
+# Links
 
 ## Language
 
@@ -25,3 +26,7 @@ https://kodi.wiki/view/Language_support
 ## Module Addons
 
 https://kodi.wiki/view/Category:Add-on_libraries/modules
+
+## Good and Mature Example
+
+https://github.com/anxdpanic/plugin.video.youtube
