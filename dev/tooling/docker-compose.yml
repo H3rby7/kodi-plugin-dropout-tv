@@ -1,5 +1,5 @@
 services:
-  xml:
+  lint-addon-xml:
     # https://gnome.pages.gitlab.gnome.org/libxml2/xmllint.html
     build:
       context: .
@@ -9,6 +9,19 @@ services:
       - --schema
       - /schema/addon.xsd
       - /src/plugin.video.dropout.tv/addon.xml
+    volumes:
+      - ../../src:/src
+      - ./schema:/schema
+  lint-settings-xml:
+    # https://gnome.pages.gitlab.gnome.org/libxml2/xmllint.html
+    build:
+      context: .
+      dockerfile: ./Dockerfile.xmllint
+    command:
+      - --noout
+      - --schema
+      - /schema/settings.xsd
+      - /src/plugin.video.dropout.tv/resources/settings.xml
     volumes:
       - ../../src:/src
       - ./schema:/schema

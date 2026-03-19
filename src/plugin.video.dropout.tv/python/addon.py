@@ -22,7 +22,8 @@ constants = PluginConstants(
   url_api_featured="https://api.vhx.tv/products/featured_items"
 )
 
-setLogLevel(int(xbmcplugin.getSetting(constants.addon_handle, 'loglevel').strip()))
+settingsLogLevel = xbmcplugin.getSetting(constants.addon_handle, 'loglevel').strip()
+setLogLevel(int(settingsLogLevel) if settingsLogLevel else 2)
 
 xbmcplugin.setContent(constants.addon_handle, 'tvshows')
 

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- ===== Types ===== -->
+
+  <xs:complexType name="ControlType">
+  <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="heading" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="hidden" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="multiselect" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="hidevalue" type="xs:string"  minOccurs="0" maxOccurs="1" />
+    </xs:choice>
+    <xs:attribute name="type" type="ControlTypeType" use="optional"/>
+    <xs:attribute name="format" type="FormatType" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="ConstraintsType">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="allowempty" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="options" type="OptionsType"  minOccurs="0" maxOccurs="1" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="OptionsType">
+    <xs:sequence>
+      <xs:element name="option" type="SingleOptionType"  minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SingleOptionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="label" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="SettingType">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="control" type="ControlType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="level" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="default" type="xs:string"  minOccurs="0" maxOccurs="1" />
+      <xs:element name="constraints" type="ConstraintsType"  minOccurs="0" maxOccurs="1" />
+    </xs:choice>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="type" type="SettingsTypeType" use="optional"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="help" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="GroupType">
+    <xs:sequence>
+      <xs:element name="setting" type="SettingType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="CategoryType">
+    <xs:sequence>
+      <xs:element name="group" type="GroupType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+    <xs:attribute name="label" type="xs:string" use="optional"/>
+    <xs:attribute name="help" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="SectionType">
+    <xs:sequence>
+      <xs:element name="category" type="CategoryType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="SettingsType">
+    <xs:sequence>
+      <xs:element name="section" type="SectionType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="version" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:simpleType name="FormatType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="action"/>
+      <xs:enumeration value="addon"/>
+      <xs:enumeration value="date"/>
+      <xs:enumeration value="file"/>
+      <xs:enumeration value="image"/>
+      <xs:enumeration value="integer"/>
+      <xs:enumeration value="ip"/>
+      <xs:enumeration value="number"/>
+      <xs:enumeration value="path"/>
+      <xs:enumeration value="percentage"/>
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="time"/>
+      <xs:enumeration value="urlencoded"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ControlTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="button"/>
+      <xs:enumeration value="colorbutton"/>
+      <xs:enumeration value="edit"/>
+      <xs:enumeration value="list"/>
+      <xs:enumeration value="slider"/>
+      <xs:enumeration value="spinner"/>
+      <xs:enumeration value="toggle"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SettingsTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="action"/>
+      <xs:enumeration value="addon"/>
+      <xs:enumeration value="boolean"/>
+      <xs:enumeration value="date"/>
+      <xs:enumeration value="integer"/>
+      <xs:enumeration value="list[addon]"/>
+      <xs:enumeration value="list[string]"/>
+      <xs:enumeration value="number"/>
+      <xs:enumeration value="path"/>
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="time"/>
+      <xs:enumeration value="urlencodedstring"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ===== Root element ===== -->
+
+  <xs:element name="settings" type="SettingsType"/>
+
+</xs:schema>

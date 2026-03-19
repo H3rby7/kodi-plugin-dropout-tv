@@ -13,6 +13,8 @@ For developing see [dev Readme](./dev/README.md)
 
 ## Language
 
+https://raw.githubusercontent.com/xbmc/xbmc/master/addons/resource.language.en_gb/resources/strings.po
+
 https://kodi.wiki/view/Language_support
 
 ## Module Addons

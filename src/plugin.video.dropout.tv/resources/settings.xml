@@ -1,13 +1,77 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-    <category label="32010">
-        <setting label="32011" type="text"   id="email" default=""/>
-        <setting label="32012" type="text"   id="password" option="hidden"  enable="!eq(-1,)" default=""/>
-    </category>
-    <category label="32090">
-        <setting label="32091" type="slider" id="loglevel" default="2" range="0,5" option="int"/>
-        <setting label="32092" type="bool"   id="logtokens"  default="false"/>
-        <setting label="32093" type="text"   id="cookiefile" default="special://profile/addon_data/plugin.video.dropout.tv/cookie-store.json"/>
-        <!-- TODO: Add Clear Cache BTN -->
-    </category>
+<?xml version="1.0" encoding="utf-8"?>
+<settings version="1">
+    <section id="plugin.video.dropout.tv">
+        <category id="credentials" label="32010" help="">
+            <group id="1" label="">
+                <!-- ********************** EMAIL ********************** -->
+                <setting label="32011" type="string" id="email" help="">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>false</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>32011</heading>
+                    </control>
+                </setting>
+
+                <!-- ********************** PASSWORD ********************** -->
+                <setting label="32012" type="string"   id="password" help="">
+                    <level>0</level>
+                        <default/>
+                        <constraints>
+                            <allowempty>false</allowempty>
+                        </constraints>
+                        <control type="edit" format="string">
+                            <heading>32012</heading>
+                            <hidevalue>true</hidevalue>
+                        </control>
+                </setting>
+            </group>
+        </category>
+        <category id="troubleshoot" label="32090" help="">
+            <group id="logs" label="">
+                <!-- ********************** LOG LEVEL ********************** -->
+                <setting label="32091" type="integer"   id="loglevel">
+                    <level>2</level>
+                    <default>2</default>
+                    <constraints>
+                        <options>
+                            <!--
+                                Reuse official KODI strings for LOG Levels, except for fatal, which was not present...
+                                See https://raw.githubusercontent.com/xbmc/xbmc/master/addons/resource.language.en_gb/resources/strings.po
+                            -->
+                            <option label="14260">0</option> <!-- DEBUG -->
+                            <option label="14116">1</option> <!-- INFO -->
+                            <option label="14117">2</option> <!-- WARN -->
+                            <option label="14118">3</option> <!-- ERROR -->
+                            <option label="32901">4</option> <!-- FATAL -->
+                            <option label="36623">5</option> <!-- NONE -->
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+
+                <!-- ********************** LOG TOKENS? ********************** -->
+                <setting label="32092" type="boolean"   id="logtokens">
+                    <level>3</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+            <group id="nevervisible" label="">
+                <!-- ********************** COOKIE FILE PATH ********************** -->
+                <setting label="32093" type="string"   id="cookiefile">
+                    <level>4</level>
+                    <default>special://profile/addon_data/plugin.video.dropout.tv/cookie-store.json</default>
+                    <constraints>
+                        <allowempty>false</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>32093</heading>
+                    </control>
+                </setting>
+            </group>
+        </category>
+    </section>
 </settings>

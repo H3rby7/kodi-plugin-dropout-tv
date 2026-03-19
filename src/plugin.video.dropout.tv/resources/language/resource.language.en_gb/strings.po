@@ -33,7 +33,7 @@ msgid "Password"
 msgstr ""
 
 msgctxt "#32091"
-msgid "Minimum Log Level - 0 -> Log Debug, 5 -> Log None"
+msgid "Minimum Log Level"
 msgstr ""
 
 msgctxt "#32092"
@@ -42,4 +42,8 @@ msgstr ""
 
 msgctxt "#32093"
 msgid "Cookie Store File Path"
+msgstr ""
+
+msgctxt "#32901"
+msgid "Fatal"
 msgstr ""
