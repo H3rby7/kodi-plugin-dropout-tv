@@ -1,20 +1,19 @@
 import xbmc
+import xbmcgui
+import xbmcplugin
 
 from ..constants import PluginConstants
-from ..api.model import Item
-from .series import render_series
-from .video import render_video
-from .movie import render_movie
-from .live_event import render_live_event
+from ..api.collections import Item
 
 def render_item(constants: PluginConstants, item: Item):
-  if "series" == (item['type']):
-    return render_series(constants, item)
-  if "live_event" == (item['type']):
-    return render_live_event(constants, item)
-  if "movie" == (item['type']):
-    return render_movie(constants, item)
-  if "video" == (item['type']):
-    return render_video(constants, item)
+  li = xbmcgui.ListItem(item['name'])
+  li.setArt({'thumb': item['thumbnail']['large']})
+  query = _createQueryParams(item)
+  xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=f"{constants.base_url}?{query}", listitem=li, isFolder=(item['type'] is not "video"))
 
-  xbmc.log("Unknown Item Type", xbmc.LOGDEBUG)
+def _createQueryParams(item: Item):
+  query = f"id={item['id']}&type={item['type']}"
+  slug = item.get('slug')
+  if slug:
+    query = f"{query}&slug={slug}"
+  return query
