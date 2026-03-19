@@ -33,9 +33,13 @@ msgid "Password"
 msgstr ""
 
 msgctxt "#32091"
-msgid "Cookie Store File Path"
+msgid "Minimum Log Level - 0 -> Log Debug, 5 -> Log None"
 msgstr ""
 
-msgctxt "#32099"
-msgid "Enable Debug Logging"
+msgctxt "#32092"
+msgid "Log tokens as plaintext instead of *** (exposes credentials)"
+msgstr ""
+
+msgctxt "#32093"
+msgid "Cookie Store File Path"
 msgstr ""

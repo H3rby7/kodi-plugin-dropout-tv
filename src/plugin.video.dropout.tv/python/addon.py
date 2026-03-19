@@ -1,3 +1,7 @@
+from lib.logger import getLogger
+from lib.logger import setLogLevel
+logger = getLogger(__name__)
+
 import sys
 import requests
 import xbmcgui
@@ -18,6 +22,8 @@ constants = PluginConstants(
   url_api_featured="https://api.vhx.tv/products/featured_items"
 )
 
+setLogLevel(int(xbmcplugin.getSetting(constants.addon_handle, 'loglevel').strip()))
+
 xbmcplugin.setContent(constants.addon_handle, 'tvshows')
 
 session = requests.Session()
@@ -25,9 +31,11 @@ load_cookies_to_session(constants, session)
 err, bearerToken = get_bearer_token(constants, session)
 
 if err:
+  logger.error("Could not access dropout.tv")
   xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url="plugin://", listitem=xbmcgui.ListItem('Could not get FeaturedItems!'))
   xbmcplugin.endOfDirectory(constants.addon_handle)
 else:
+  logger.info("Getting Featured Items")
   features = get_featured_items(constants, session, bearerToken)
   for item in features['_embedded']['items']:
     render_item(constants, item)
