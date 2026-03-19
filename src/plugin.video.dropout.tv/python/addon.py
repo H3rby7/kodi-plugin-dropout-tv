@@ -44,4 +44,4 @@ else:
   for item in features['_embedded']['items']:
     render_item(constants, item)
 
-  xbmcplugin.endOfDirectory(constants.addon_handle)
+  xbmcplugin.endOfDirectory(constants.addon_handle, cacheToDisc=False)
