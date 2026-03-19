@@ -4,6 +4,7 @@ class PluginConstants():
   """
   def __init__(
       self,
+      base_url: int,
       addon_handle: int,
       site_id: int,
       hub_id: int,
@@ -11,6 +12,7 @@ class PluginConstants():
       url_browse: str,
       url_api_featured: str
     ):
+    self.base_url = base_url
     self.addon_handle = addon_handle
     self.site_id = site_id
     self.hub_id = hub_id
