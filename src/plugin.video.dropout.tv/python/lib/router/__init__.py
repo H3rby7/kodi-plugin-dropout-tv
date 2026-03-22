@@ -18,7 +18,7 @@ def resolve_route(constants: PluginConstants):
   args = parse_qs(constants.query[1:])
   logger.debug(f"Router called with: {args}")
   route = args.get('type', ['none'])[0]
-  if route == 'series':
+  if route == 'series' or route == 'season':
     id = int(args['id'][0], 10)
     return show_collection(constants, id)
   if route == 'video':

@@ -20,6 +20,7 @@ class Image(TypedDict):
 class ItemBase(TypedDict):
   id: int
   name: str
+  title: Optional[str]
   short_description: str
   description: str
   slug: Optional[str]
