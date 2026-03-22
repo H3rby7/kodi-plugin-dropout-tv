@@ -37,10 +37,14 @@ msgid "Minimum Log Level"
 msgstr ""
 
 msgctxt "#32092"
-msgid "Log tokens as plaintext instead of *** (exposes credentials)"
+msgid "Log API requests"
 msgstr ""
 
 msgctxt "#32093"
+msgid "Log tokens as plaintext instead of *** (exposes credentials)"
+msgstr ""
+
+msgctxt "#32094"
 msgid "Cookie Store File Path"
 msgstr ""
 

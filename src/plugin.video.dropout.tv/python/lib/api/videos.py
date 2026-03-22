@@ -6,6 +6,7 @@ from typing import TypedDict, List, Optional
 
 from ..constants import PluginConstants
 from .bearer_auth import BearerAuth
+from .requestlogger import logResponse
 
 from .shared_models import Link, Image
 
@@ -17,6 +18,7 @@ def get_video(constants: PluginConstants, session: requests.Session, bearerToken
   logger.debug(f"Calling: {url}")
   r = session.get(url, auth=BearerAuth(bearerToken))
 
+  logResponse(constants, r)
   response: VideoResponse = r.json()
   logger.debug(f"Received entries: {response.get('count')}")
   return response

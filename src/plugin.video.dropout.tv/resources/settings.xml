@@ -52,8 +52,15 @@
                     <control type="spinner" format="string"/>
                 </setting>
 
+                <!-- ********************** LOG REQUESTS? ********************** -->
+                <setting label="32092" type="boolean"   id="logrequests" help="">
+                    <level>3</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+
                 <!-- ********************** LOG TOKENS? ********************** -->
-                <setting label="32092" type="boolean"   id="logtokens" help="">
+                <setting label="32093" type="boolean"   id="logtokens" help="">
                     <level>3</level>
                     <default>false</default>
                     <control type="toggle"/>
@@ -61,14 +68,14 @@
             </group>
             <group id="nevervisible" label="">
                 <!-- ********************** COOKIE FILE PATH ********************** -->
-                <setting label="32093" type="string"   id="cookiefile" help="">
+                <setting label="32094" type="string"   id="cookiefile" help="">
                     <level>4</level>
                     <default>special://profile/addon_data/plugin.video.dropout.tv/cookie-store.json</default>
                     <constraints>
                         <allowempty>false</allowempty>
                     </constraints>
                     <control type="edit" format="string">
-                        <heading>32093</heading>
+                        <heading>32094</heading>
                     </control>
                 </setting>
             </group>

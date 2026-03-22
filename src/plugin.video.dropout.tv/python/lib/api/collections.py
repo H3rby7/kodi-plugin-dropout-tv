@@ -6,6 +6,7 @@ from typing import TypedDict, List, Optional
 
 from ..constants import PluginConstants
 from .bearer_auth import BearerAuth
+from .requestlogger import logResponse
 
 from .shared_models import Link, Image
 
@@ -22,6 +23,7 @@ def get_featured_items(constants: PluginConstants, session: requests.Session, be
   logger.debug(f"Calling: {url} with params={query}")
   r = session.get(url, params=query, auth=BearerAuth(bearerToken))
 
+  logResponse(constants, r)
   response: FeaturedItemsResponse = r.json()
   logger.debug(f"Received entries: {response.get('count')}")
   return response
@@ -36,6 +38,7 @@ def get_collection(constants: PluginConstants, session: requests.Session, bearer
   logger.debug(f"Calling: {url}")
   r = session.get(url, auth=BearerAuth(bearerToken))
 
+  logResponse(constants, r)
   response: FeaturedItemsResponse = r.json()
   logger.debug(f"Received entries: {response.get('count')}")
   return response
