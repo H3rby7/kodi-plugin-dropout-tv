@@ -8,25 +8,7 @@ from ..constants import PluginConstants
 from .bearer_auth import BearerAuth
 from .requestlogger import logResponse
 
-from .shared_models import Link, Image
-
-def get_featured_items(constants: PluginConstants, session: requests.Session, bearerToken: str):
-  """
-  Calls api.vhx.tv for featured items
-  """
-  query = {
-    'site_id': constants.site_id,
-    'hub_id': constants.hub_id,
-  }
-
-  url = constants.url_api_featured
-  logger.debug(f"Calling: {url} with params={query}")
-  r = session.get(url, params=query, auth=BearerAuth(bearerToken))
-
-  logResponse(constants, r)
-  response: FeaturedItemsResponse = r.json()
-  logger.debug(f"Received entries: {response.get('count')}")
-  return response
+from .shared_models import Link, Image, PaginationLinksBase, ItemBase
 
 def get_collection(constants: PluginConstants, session: requests.Session, bearerToken: str, id: int):
   """
@@ -39,52 +21,67 @@ def get_collection(constants: PluginConstants, session: requests.Session, bearer
   r = session.get(url, auth=BearerAuth(bearerToken))
 
   logResponse(constants, r)
-  response: FeaturedItemsResponse = r.json()
+  response: CollectionsResponse = r.json()
   logger.debug(f"Received entries: {response.get('count')}")
   return response
 
-class PaginationLinks(TypedDict):
-  first: Link
-  last: Link
-  next: Link
-  prev: Link
-  self_link: Link
-
-class CollectionPageLink(TypedDict):
-  href: str
+class PaginationLinks(PaginationLinksBase):
+  self: Link
 
 class ItemLinks(TypedDict):
-  collection_page: CollectionPageLink
+  self: Link
+  items: Link
+  collections_page: Link
+  series: Link
+  episodes: Link
 
-class ImageVariant(TypedDict, total=False):
-  large: Optional[str]
-  source: str
+class SeasonMetaData(TypedDict):
+  season_number: int
 
 class AdditionalImages(TypedDict, total=False):
-  aspect_ratio_12_5_logo: Optional[ImageVariant]
-  aspect_ratio_16_14: Optional[ImageVariant]
-  aspect_ratio_16_6: Optional[ImageVariant]
-  aspect_ratio_16_9_background: Optional[ImageVariant]
+  aspect_ratio_1_1: Optional[Image]
+  aspect_ratio_2_3: Optional[Image]
+  aspect_ratio_2_3_featured: Optional[Image]
+  aspect_ratio_12_5_logo: Optional[Image]
+  aspect_ratio_16_14: Optional[Image]
+  aspect_ratio_16_6: Optional[Image]
+  aspect_ratio_16_9_background: Optional[Image]
 
-class Item(TypedDict):
+class Item(ItemBase):
   _links: ItemLinks
   additional_images: AdditionalImages
-  created_at: str
-  description: str
-  id: int
-  name: str
+  episodes_count: int
+  # featured_category_thumbnail_layout: str
+  files_count: int
+  geo_available: str
+  geo_unavailable: str
+  has_any_free_videos: bool
+  has_free_videos: bool
+  has_only_free_videos: bool
+  has_only_public_videos: bool
+  hide_item_title: bool
+  item_id: int
+  is_automatic: bool
+  is_available: bool
+  is_featured: bool
+  items_count: int
+  live_events_count: int
+  metadata: SeasonMetaData
+  # overlay_configuration: dict
+  position: int
+  plans: List[str]
+  season_number: int
   seasons_count: int
-  short_description: str
-  slug: str
-  thumbnail: Image
+  tags: Optional[List[str]]
+  thumbnail_badges: List[str]
+  # thumbnail_size: Optional[str]
+  title: str
   trailer_url: str
-  type: str
-  updated_at: str
 
 class Embedded(TypedDict):
   items: List[Item]
 
-class FeaturedItemsResponse(TypedDict):
+class CollectionsResponse(TypedDict):
   _embedded: Embedded
   _links: PaginationLinks
   count: int

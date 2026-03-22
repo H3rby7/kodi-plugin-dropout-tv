@@ -8,7 +8,7 @@ from ..constants import PluginConstants
 from .bearer_auth import BearerAuth
 from .requestlogger import logResponse
 
-from .shared_models import Link, Image
+from .shared_models import Link, Image, ItemBase
 
 def get_video(constants: PluginConstants, session: requests.Session, bearerToken: str, id: int):
   """
@@ -73,15 +73,12 @@ class PaginationLinks(TypedDict):
   self: Link
   files: Link
 
-class VideoResponse(TypedDict):
+class VideoResponse(ItemBase):
   _embedded: Embedded
   _links: PaginationLinks
-  id: int
   title: str
-  description: str
   status: str
   duration: Duration
-  thumbnail: Image
   tracks: Tracks
   # "advertising": {}
   metadata: Metadata
@@ -91,8 +88,6 @@ class VideoResponse(TypedDict):
   files_count: int
   plays_count: int
   finishes_count: int
-  created_at: str
-  updated_at: str
   # "live_event_id": null,
   # "live_video": false,
   # "live_status": null,

@@ -9,7 +9,8 @@ from urllib.parse import parse_qs
 from ..constants import PluginConstants
 from ..auth.cookies import load_cookies_to_session
 from ..auth.get_token import get_bearer_token
-from ..api.collections import get_featured_items, get_collection
+from ..api.products import get_featured_items
+from ..api.collections import get_collection
 from ..api.videos import get_video
 from ..render.item import render_item
 
