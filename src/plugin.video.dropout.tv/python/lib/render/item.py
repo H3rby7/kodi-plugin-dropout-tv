@@ -11,12 +11,21 @@ from ..api.shared_models import ItemBase
 
 def render_item(constants: PluginConstants, item: ItemBase):
   li = xbmcgui.ListItem(item['name'])
+
+  # More ART options here:
+  # https://xbmc.github.io/docs.kodi.tv/master/kodi-base/d8/d29/group__python__xbmcgui__listitem.html#gad3f9b9befa5f3d2f4683f9957264dbbe
   li.setArt({'thumb': item['thumbnail']['large']})
 
   info = _createInfoDict(item)
   li.setInfo('video', info)
+
+  # Besser:
+  # li.getVideoInfoTag()
+  # und dort setzen
   query = _createQueryParams(item)
   isDirectory=item['type'] != "video"
+  if not isDirectory:
+    li.setProperty("IsPlayable", "true")
   link = f"{constants.base_url}?{query}"
 
   logger.debug(f"Adding a {'dir' if isDirectory else 'file'} with url: {link} and info: {info}")

@@ -13,6 +13,7 @@ from ..api.products import get_featured_items
 from ..api.collections import get_collection
 from ..api.videos import get_video
 from ..render.item import render_item
+from ..render.video import play_video
 
 def resolve_route(constants: PluginConstants):
   args = parse_qs(constants.query[1:])
@@ -23,12 +24,12 @@ def resolve_route(constants: PluginConstants):
     return show_collection(constants, id)
   if route == 'video':
     id = int(args['id'][0], 10)
-    return show_video(constants, id)
+    return get_and_play_video(constants, id)
 
   # Fallback / Default
   return show_featured(constants)
 
-def show_video(constants: PluginConstants, id: int):
+def get_and_play_video(constants: PluginConstants, id: int):
   session = requests.Session()
   load_cookies_to_session(constants, session)
   err, bearerToken = get_bearer_token(constants, session)
@@ -41,10 +42,8 @@ def show_video(constants: PluginConstants, id: int):
   
   logger.info("Getting Video")
   video = get_video(constants, session, bearerToken, id)
-
-  logger.debug(f"Video is: {video}")
-  xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=constants.base_url, listitem=xbmcgui.ListItem('Go Back...'), isFolder=True)
-  xbmcplugin.endOfDirectory(constants.addon_handle, cacheToDisc=False)
+  success, listItem = play_video(constants, video)
+  xbmcplugin.setResolvedUrl(constants.addon_handle, success, listItem)
 
 def show_featured(constants: PluginConstants):
   session = requests.Session()
@@ -57,7 +56,7 @@ def show_featured(constants: PluginConstants):
     xbmcplugin.endOfDirectory(constants.addon_handle, updateListing=False, succeeded=False, cacheToDisc=False)
     return
 
-  logger.info("Getting Collection")
+  logger.info("Getting Featured Items")
   features = get_featured_items(constants, session, bearerToken)
   for item in features['_embedded']['items']:
     render_item(constants, item)
