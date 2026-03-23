@@ -11,7 +11,6 @@ parser.add_argument('-lh', '--log-headers', action='store', dest='log_headers', 
 parser.add_argument('-lt', '--log-tokens', action='store', dest='log_tokens', help='Log Tokens', default=False)
 parser.add_argument('-e', '--email', action='store', dest='email', help='email address')
 parser.add_argument('-p', '--password', action='store', dest='password', help='Password')
-parser.add_argument('-uid', '--userid', action='store', dest='userid', help='VHX User ID')
 argcomplete.autocomplete(parser)
 
 args = None
@@ -62,17 +61,9 @@ FEATURED_ITEMS_URL = "https://api.vhx.tv/products/featured_items"
 A_VIDEO_URL = "https://api.vhx.tv/videos/3601622"
 """Exemplary API URL to get one video"""
 
-# Session not sufficient to authorize for it.
-A_VIDEO_FILES_URL = f"{A_VIDEO_URL}/files?codec=h264&format=mpd&quality=adaptive"
-"""Exemplary API URL to get the files of one video"""
-
-# https://dev.vhx.tv/docs/api/#authorizations
-AUTH_URL = "https://api.vhx.tv/authorizations"
-"""
-API to create an Authorization for a video.
-
-This also returns an iframe with src that contains m3u playlist files at some depth.
-"""
+# Session nor bearer sufficient to authorize for it.
+A_VIDEO_CONFIG_URL = f"https://player.vimeo.com/video/3601622/config"
+"""Exemplary API URL to get the config of one video"""
 
 class BearerAuth(AuthBase):
   """
@@ -158,7 +149,6 @@ def login(session, email, password, csrf_param, csrf_token):
   store_cookies(session)
 
   token = get_bearer_token_from_text(r.text)
-  user_id = get_user_id_from_text(r.text)
   # TODO: Throw/Handle if token is still 'None'
   return token
 
@@ -174,24 +164,6 @@ def get_bearer_token_from_text(text):
   logged_token = token if args is not None and args.log_tokens else "***"
   logger.info(f"Retreived token: {logged_token}")
   return token
-
-def get_user_id_from_text(text) -> str:
-  """
-  Search for the value of window.TOKEN within the text.
-
-  Usually this value is present within the html requests to dropout.tv after being logged in.
-  UPDATE: Only seems to be present when visiting the page with an actual browser?
-  """
-  match = re.search(r'window\._current_user\s*=\s*(\{[^\}]+\})', text)
-  if not match:
-    logger.error(f"Could not retrieve user_id")
-    return 'unknown_user_id'
-  userJson = json.loads(match.group(1))
-  logger.debug(f"User json is {userJson}")
-  user_id = userJson['id']
-
-  logger.info(f"Retreived user_id: {user_id}")
-  return user_id
 
 def get_csrf(text):
   """
@@ -238,18 +210,22 @@ def get_featured_items(bearerToken):
   r = session.get(FEATURED_ITEMS_URL, params=query, auth=BearerAuth(bearerToken))
   write_log_response("featured_items-GET", r)
 
-def create_authorization(session, user_id):
+def get_video_config(bearerToken):
   """
-  Gets 422, Unprocessable, probably not the way to go...
+  Calls api.vhx.tv for a video config
   """
-  payload = {
-    "customer": f"https://api.vhx.tv/customers/{user_id}",
-    "video": A_VIDEO_URL,
+  query = {
+    'token': bearerToken,
+    'autoplay': '1',
+    'color': 'feea3b',
+    'controls': '1',
+    'speed': '1',
+    'trick_play': '1'
   }
 
-  logger.info(f"POST Create Authorization")
-  r = session.post(LOGIN_URL, data=payload)
-  write_log_response("authorization-POST", r)
+  r = session.get(A_VIDEO_CONFIG_URL, params=query, auth=BearerAuth(bearerToken))
+  write_log_response("video-config-GET", r)
+
 
 if __name__ == "__main__":
   logger.warning("Reverse Engineering Dropout.tv WEB")
@@ -260,6 +236,5 @@ if __name__ == "__main__":
   # v = session.get(A_VIDEO_FILES_URL, auth=BearerAuth(bearerToken))
   # write_log_response("video-3601622-GET", v)
   
-  # create_authorization(session, args.userid)
-
-  get_featured_items(bearerToken)
+  get_video_config(bearerToken)
+  # get_featured_items(bearerToken)
