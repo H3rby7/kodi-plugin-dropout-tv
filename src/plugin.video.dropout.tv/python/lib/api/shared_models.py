@@ -1,7 +1,7 @@
 from typing import TypedDict, List, Optional
 
 class Link(TypedDict, total=False):
-  href: Optional[str]
+  href: str
 
 class PaginationLinksBase(TypedDict):
   first: Link

@@ -75,7 +75,6 @@ class Item(ItemBase):
   tags: Optional[List[str]]
   thumbnail_badges: List[str]
   # thumbnail_size: Optional[str]
-  title: str
   trailer_url: str
 
 class Embedded(TypedDict):

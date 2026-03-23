@@ -56,6 +56,9 @@ class FileSize(TypedDict):
   bytes: int
 
 class FileLinks(TypedDict):
+  """
+  e.g. href = https://api.vhx.tv/videos/1/files?quality=adaptive&format=m3u8
+  """
   self: Link
 
 class File(TypedDict):
@@ -76,7 +79,6 @@ class PaginationLinks(TypedDict):
 class VideoResponse(ItemBase):
   _embedded: Embedded
   _links: PaginationLinks
-  title: str
   status: str
   duration: Duration
   tracks: Tracks
