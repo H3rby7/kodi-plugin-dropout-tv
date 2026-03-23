@@ -57,14 +57,6 @@ COOKIE_FILE = "stored-cookies.json"
 FEATURED_ITEMS_URL = "https://api.vhx.tv/products/featured_items"
 """API URL to Featured Items - Exemplary endpoint"""
 
-# Session not sufficient to authorize for it.
-A_VIDEO_URL = "https://api.vhx.tv/videos/3601622"
-"""Exemplary API URL to get one video"""
-
-# Session nor bearer sufficient to authorize for it.
-A_VIDEO_CONFIG_URL = f"https://player.vimeo.com/video/3601622/config"
-"""Exemplary API URL to get the config of one video"""
-
 class BearerAuth(AuthBase):
   """
   Python Requests Bearer Token Auth Support
@@ -210,31 +202,14 @@ def get_featured_items(bearerToken):
   r = session.get(FEATURED_ITEMS_URL, params=query, auth=BearerAuth(bearerToken))
   write_log_response("featured_items-GET", r)
 
-def get_video_config(bearerToken):
-  """
-  Calls api.vhx.tv for a video config
-  """
-  query = {
-    'token': bearerToken,
-    'autoplay': '1',
-    'color': 'feea3b',
-    'controls': '1',
-    'speed': '1',
-    'trick_play': '1'
-  }
-
-  r = session.get(A_VIDEO_CONFIG_URL, params=query, auth=BearerAuth(bearerToken))
-  write_log_response("video-config-GET", r)
-
-
 if __name__ == "__main__":
   logger.warning("Reverse Engineering Dropout.tv WEB")
   session = requests.Session()
   load_cookies(session)
   bearerToken = get_bearer_token(session, args.email, args.password)
 
-  # v = session.get(A_VIDEO_FILES_URL, auth=BearerAuth(bearerToken))
-  # write_log_response("video-3601622-GET", v)
-  
-  get_video_config(bearerToken)
-  # get_featured_items(bearerToken)
+  # Probably do need to call the dropout.tv pages html 
+  # parse the iframe src
+  # call iframe src to parse the m3u8 urls
+
+  get_featured_items(bearerToken)
