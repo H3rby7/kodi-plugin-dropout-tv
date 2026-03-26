@@ -11,7 +11,7 @@ from ..auth.cookies import load_cookies_to_session
 from ..auth.get_token import get_bearer_token
 from ..api.products import get_featured_items
 from ..api.collections import get_collection
-from ..api.videos import get_video
+from ..html.videos import get_video
 from ..render.item import render_item
 from ..render.video import play_video
 
@@ -23,26 +23,24 @@ def resolve_route(constants: PluginConstants):
     id = int(args['id'][0], 10)
     return show_collection(constants, id)
   if route == 'video':
-    id = int(args['id'][0], 10)
-    return get_and_play_video(constants, id)
+    droupoutHref = args['video_url'][0]
+    return get_and_play_video(constants, droupoutHref)
 
   # Fallback / Default
   return show_featured(constants)
 
-def get_and_play_video(constants: PluginConstants, id: int):
+def get_and_play_video(constants: PluginConstants, droupoutHref: str):
   session = requests.Session()
   load_cookies_to_session(constants, session)
-  err, bearerToken = get_bearer_token(constants, session)
 
+  logger.info(f"Getting Video: {droupoutHref}")
+  err, videoUrl = get_video(constants, session, droupoutHref)
   if err:
-    logger.error("Could not access dropout.tv")
-    xbmcplugin.addDirectoryItem(handle=constants.addon_handle, url=constants.base_url, listitem=xbmcgui.ListItem('Could not get FeaturedItems!'))
-    xbmcplugin.endOfDirectory(constants.addon_handle, updateListing=False, succeeded=False, cacheToDisc=False)
+    logger.error(f"Error Playing Video: '{err}'")
+    xbmcplugin.setResolvedUrl(constants.addon_handle, False, xbmcgui.ListItem())
     return
-  
-  logger.info("Getting Video")
-  video = get_video(constants, session, bearerToken, id)
-  success, listItem = play_video(constants, video)
+
+  success, listItem = play_video(constants, videoUrl)
   xbmcplugin.setResolvedUrl(constants.addon_handle, success, listItem)
 
 def show_featured(constants: PluginConstants):

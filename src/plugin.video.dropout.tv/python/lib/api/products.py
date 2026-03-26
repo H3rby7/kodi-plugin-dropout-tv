@@ -6,7 +6,7 @@ from typing import TypedDict, List, Optional
 
 from ..constants import PluginConstants
 from .bearer_auth import BearerAuth
-from .requestlogger import logResponse
+from ..logger.requestlogger import logResponse
 
 from .shared_models import Link, Image, PaginationLinksBase, ItemBase
 
@@ -31,12 +31,6 @@ def get_featured_items(constants: PluginConstants, session: requests.Session, be
 class PaginationLinks(PaginationLinksBase):
   self_link: Link
 
-class CollectionPageLink(TypedDict):
-  href: str
-
-class ItemLinks(TypedDict):
-  collection_page: CollectionPageLink
-
 class ImageVariant(TypedDict, total=False):
   large: Optional[str]
   source: str
@@ -48,7 +42,6 @@ class AdditionalImages(TypedDict, total=False):
   aspect_ratio_16_9_background: Optional[ImageVariant]
 
 class Item(ItemBase):
-  _links: ItemLinks
   additional_images: AdditionalImages
   seasons_count: int
   trailer_url: str

@@ -36,9 +36,13 @@ def _createQueryParams(item: ItemBase):
   Map ItemBase to a url as expected by xbmcplugin.addDirectoryItem
   """
   query = f"id={item['id']}&type={item['type']}"
+  # TODO: slug is actually unused.
   slug = item.get('slug')
   if slug:
     query = f"{query}&slug={slug}"
+  video_url = item.get('_links').get('video_page')
+  if video_url:
+    query = f"{query}&video_url={video_url.get('href')}"
   return query
 
 def _createInfoDict(item: ItemBase) -> Dict[str, str]:

@@ -12,8 +12,7 @@ class PluginConstants():
       url_login: str,
       url_browse: str,
       url_api_featured: str,
-      url_api_collections: str,
-      url_api_videos: str
+      url_api_collections: str
     ):
     self.base_url = base_url
     self.addon_handle = addon_handle
@@ -24,4 +23,3 @@ class PluginConstants():
     self.url_browse = url_browse
     self.url_api_featured = url_api_featured
     self.url_api_collections = url_api_collections
-    self.url_api_videos = url_api_videos

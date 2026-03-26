@@ -40,7 +40,7 @@ def get_csrf(constants: PluginConstants, text: str) -> Tuple[Optional[str], str,
   Usually these values are present within <meta> tags inside the <head> of the html
   """
   logger.debug("Extracting csrf-param and csrf-token...")
-  soup = BeautifulSoup(text, "lxml")
+  soup = BeautifulSoup(text, "html.parser")
 
   csrf_param_tag = soup.select_one("head meta[name='csrf-param']")
   csrf_token_tag = soup.select_one("head meta[name='csrf-token']")

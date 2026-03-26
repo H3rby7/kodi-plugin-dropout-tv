@@ -17,8 +17,7 @@ constants = PluginConstants(
   url_login="https://watch.dropout.tv/login",
   url_browse="https://watch.dropout.tv/browse",
   url_api_featured="https://api.vhx.tv/products/featured_items",
-  url_api_collections="https://api.vhx.tv/collections",
-  url_api_videos="https://api.vhx.tv/videos"
+  url_api_collections="https://api.vhx.tv/collections"
 )
 
 settingsLogLevel = xbmcplugin.getSetting(constants.addon_handle, 'loglevel').strip()

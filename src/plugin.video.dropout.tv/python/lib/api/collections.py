@@ -6,7 +6,7 @@ from typing import TypedDict, List, Optional
 
 from ..constants import PluginConstants
 from .bearer_auth import BearerAuth
-from .requestlogger import logResponse
+from ..logger.requestlogger import logResponse
 
 from .shared_models import Link, Image, PaginationLinksBase, ItemBase
 
@@ -28,13 +28,6 @@ def get_collection(constants: PluginConstants, session: requests.Session, bearer
 class PaginationLinks(PaginationLinksBase):
   self: Link
 
-class ItemLinks(TypedDict):
-  self: Link
-  items: Link
-  collections_page: Link
-  series: Link
-  episodes: Link
-
 class SeasonMetaData(TypedDict):
   season_number: int
 
@@ -48,7 +41,6 @@ class AdditionalImages(TypedDict, total=False):
   aspect_ratio_16_9_background: Optional[Image]
 
 class Item(ItemBase):
-  _links: ItemLinks
   additional_images: AdditionalImages
   episodes_count: int
   # featured_category_thumbnail_layout: str

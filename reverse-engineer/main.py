@@ -164,7 +164,7 @@ def get_csrf(text):
   Usually these values are present within <meta> tags inside the <head> of the html
   """
   logger.debug("Extracting csrf-param and csrf-token...")
-  soup = BeautifulSoup(text, "lxml")
+  soup = BeautifulSoup(text, "html.parser")
   csrf_param = soup.select_one("head meta[name='csrf-param']")["content"]
   csrf_token = soup.select_one("head meta[name='csrf-token']")["content"]
   logged_token = csrf_token if args is not None and args.log_tokens else "***"
